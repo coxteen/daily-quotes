@@ -2,7 +2,7 @@
 
 # Daily Quotes
 
-**Daily Quotes helps people discover, save, and share meaningful ideas in a social, mobile-first experience that turns everyday inspiration into a habit of reflection and connection.**
+**Daily Quotes helps people discover, save, and share meaningful ideas in a social, mobile-first experience that turns everyday inspiration into a habit of reflection and connection**
 
 [![Platform](https://img.shields.io/badge/Platform-Cross--Platform-0EA5E9?style=flat-square&logo=expo&logoColor=white)](https://expo.dev/)
 [![Framework](https://img.shields.io/badge/React%20Native-0.81.5-61DAFB?style=flat-square&logo=react&logoColor=white)](https://reactnative.dev/)
