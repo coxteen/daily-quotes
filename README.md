@@ -1,157 +1,168 @@
+<div align="center">
+
 # Daily Quotes
 
-A full-stack social platform for sharing, discovering, and interacting with quotes. Built with **React Native (Expo)** and **Node.js/Express (TypeScript)**.
+**Daily Quotes helps people discover, save, and share meaningful ideas in a social, mobile-first experience that turns everyday inspiration into a habit of reflection and connection.**
 
-## Quick Start
+[![Platform](https://img.shields.io/badge/Platform-Cross--Platform-0EA5E9?style=flat-square&logo=expo&logoColor=white)](https://expo.dev/)
+[![Framework](https://img.shields.io/badge/React%20Native-0.81.5-61DAFB?style=flat-square&logo=react&logoColor=white)](https://reactnative.dev/)
+[![Language](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Backend](https://img.shields.io/badge/Backend-Express%205-FF6B6B?style=flat-square&logo=express&logoColor=white)](https://expressjs.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)](#-license--author)
+
+</div>
+
+---
+
+## 📌 Problem & Motivation
+
+People often collect quotes in scattered notes, messages, and social feeds without a dedicated place to discover thoughtful perspectives, interact with others, or revisit meaningful moments later. Existing solutions rarely combine content discovery, social interaction, and personal reflection in a single flow.
+
+**Daily Quotes** addresses this by streamlining the entire experience:
+
+- **Discoverability:** Curated, searchable, and mood-aware quote exploration turns inspiration into a daily habit.
+- **Social context:** Friends, reactions, comments, and messaging give quotes a conversation layer instead of isolated content.
+- **Personal ritual:** Zen mode, notifications, and journaling help users turn reading into mindful reflection rather than passive scrolling.
+
+---
+
+## ✨ Key Features
+
+- **⚡ Quote Feed & Discovery:** Publish and browse quotes, react with meaningful emotions, and explore personalized content by mood and context.
+- **💬 Social Interaction:** Build friendships, chat in real time, and participate in comments and conversations around quotes.
+- **🔒 Secure Auth & Sessions:** JWT-based authentication, session tracking, and protected routes keep user access controlled and reliable.
+- **📱 Cross-Platform Experience:** Run the app on mobile, web, and emulator targets with Expo while the backend serves shared data and notifications.
+- **🧠 AI-Assisted Search:** Use semantic and mood-focused discovery patterns with optional Ollama-based embeddings for richer recommendations.
+- **🌙 Zen Mode:** Enter a focused, distraction-free quote experience with ambient audio and reflection support.
+
+---
+
+## 🧠 Architecture & How It Works
+
+<p align="center">
+  <img src="./frontend/assets/diagrama-secventa-login.png" alt="Daily Quotes user flow overview" width="850">
+</p>
+
+<p align="center">
+  <img src="./frontend/assets/diagrama-arhitectura.png" alt="Daily Quotes architecture overview" width="850">
+</p>
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as User / Client
+    participant UI as React Native App
+    participant Controller as Express API / Auth + Services
+    participant External as PostgreSQL + Socket.IO + Ollama
+
+    User->>UI: Open app / add quote / browse feed
+    UI->>Controller: Send validated request or tokenized action
+    Note over Controller: Auth, rate limiting, validation, business logic
+    Controller->>External: Persist quote, update relations, fetch recommendations
+    External-->>Controller: Response payload / events / AI results
+    Controller-->>UI: Return updated state or socket event
+    UI-->>User: Render feed, messages, reactions, and notifications
+```
+
+## 🛠️ Tech Stack
+
+| Category | Technology | Purpose / Highlights |
+|---|---|---|
+| Frontend / Client | React Native + Expo + React Navigation | Mobile-first UI, native runtime support, and cross-platform delivery. |
+| Language & Runtime | TypeScript 5.9 + Node.js 18+ | Strong typing for the app and API, with modern JavaScript runtime support. |
+| State / Architecture | Context API + custom hooks + REST + WebSockets | Simple, responsive app state management with real-time social features. |
+| APIs & Tooling | Express 5, Socket.IO, PostgreSQL + pgvector, JWT, Zod, Docker Compose | Secure API layer, real-time messaging, vector search, and local infrastructure. |
+| Deployment / Target | Android / iOS / Web via Expo + backend containerized services | Flexible runtime targeting for mobile and browser development. |
+
+## 🚀 Getting Started
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) v18+
-- [Docker](https://docs.docker.com/get-docker/) & [Docker Compose](https://docs.docker.com/compose/install/) (for PostgreSQL)
-- [Expo Go](https://expo.dev/go) app on your phone (optional, for mobile testing)
+- **Node.js:** 18+
+- **Docker + Docker Compose:** Required for PostgreSQL and local service orchestration
+- **Expo Go (optional):** For testing the app on a physical device
 
-### 1. Clone & Install
+### 1. Installation
 
 ```bash
-git clone https://github.com/costinghiujan/daily-quotes.git
+git clone https://github.com/coxteen/daily-quotes.git
 cd daily-quotes
 
 # Install backend dependencies
-cd backend && npm install && cd ..
+cd backend && npm install
 
 # Install frontend dependencies
-cd frontend && npm install && cd ..
+cd ../frontend && npm install
 ```
 
-### 2. Start the Database
+### 2. Environment Configuration
 
-```bash
-docker compose up -d
-```
-
-This starts PostgreSQL with the pgvector extension on port 5432.
-
-### 3. Configure the Backend
+Create a `.env` file inside the `backend` folder by copying the example file:
 
 ```bash
 cd backend
 cp .env.example .env
 ```
 
-Edit `.env` and set at minimum:
+Then fill in the required values:
 
+```env
+PORT=3000
+DB_USER=your_db_user
+DB_PASSWORD=your_db_password
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=daily_quotes_postgres_db
+JWT_SECRET=your_secure_jwt_secret_key_here_change_this_for_production
 ```
-DB_USER=costin
-DB_PASSWORD=costin
-JWT_SECRET=your_secure_jwt_secret_key
+
+| Variable | Source | Description |
+|---|---|---|
+| `DB_USER` | User-defined | Database username used by the backend service. |
+| `DB_PASSWORD` | User-defined | Database password for the local PostgreSQL instance. |
+| `JWT_SECRET` | User-defined | Secret key used to sign and verify user sessions. |
+
+> ⚠️ **Security Notice:** Never commit `.env` files, production credentials, or signing keys to version control.
+
+### 3. Running Locally
+
+Start the database:
+
+```bash
+docker compose up -d
 ```
 
-> **Windows users**: Run Docker Desktop, then use the same commands above in PowerShell, Git Bash, or WSL.
-
-### 4. Seed & Start the Backend
+Start the backend:
 
 ```bash
 cd backend
-npm run db:seed    # Populate database with sample data
-npm run dev        # Start dev server at http://localhost:3000
+npm run db:seed
+npm run dev
 ```
 
-### 5. Start the Frontend
+Start the frontend:
 
 ```bash
 cd frontend
-npm start          # Start Expo dev server
+npm start
 ```
 
-Then choose how to run the app:
+Open the Expo dev tools or scan the QR code in Expo Go on a connected device.
 
-| Command | Platform | Requirements |
-|---|---|---|
-| Scan QR code with Expo Go | Android / iOS | Phone on same network |
-| `npm run android` | Android Emulator | Android Studio |
-| `npm run ios` | iOS Simulator | macOS with Xcode |
-| `npm run web` | Web browser | Any OS |
+## ⚙️ Configuration
 
-## Features
+Core runtime and validation settings are centralized in the backend configuration layer, especially in files such as `backend/src/utils/envValidator.ts` and `backend/src/config/db.ts`.
 
-- **Quotes** — Create, share, react (like, love, insightful, bravo), and comment
-- **Social** — Friends system, real-time messaging, voice/video calls
-- **AI-Powered** — Semantic quote search, mood-based discovery, personalized explore feed (requires [Ollama](https://ollama.ai/))
-- **Zen Mode** — Immersive full-screen quotes with ambient audio (rain/lofi) and reflection journaling
-- **Gamification** — XP, levels, achievement badges, friend streaks
-- **Notifications** — Push notifications with scheduling by time and emotion
-- **Multi-language** — English & Romanian
-- **Theme** — Light/dark mode
-
-## Project Structure
-
-```
-daily-quotes/
-├── backend/          # Express + TypeScript API server
-│   ├── src/
-│   │   ├── config/   # DB, seeding, Swagger, env validation
-│   │   ├── controllers/
-│   │   ├── routes/
-│   │   ├── middleware/  # Auth, validation, rate limiting, security
-│   │   ├── services/    # AI, cron, push notifications, gamification
-│   │   └── schemas/     # Zod validation schemas
-│   └── .env.example
-├── frontend/         # React Native (Expo) mobile app
-│   ├── src/
-│   │   ├── api/      # Axios service clients
-│   │   ├── screens/  # 14 screens (Login, Home, Explore, Zen, etc.)
-│   │   ├── components/
-│   │   ├── context/  # Auth, Theme, Alert providers
-│   │   ├── hooks/
-│   │   ├── i18n/     # English & Romanian translations
-│   │   └── theme/
-│   └── app.json
-└── docker-compose.yml
+```ts
+export const SERVER_CONFIG = {
+  port: Number(process.env.PORT ?? 3000),
+  jwtExpiryDays: 30,
+  maxUploadMb: 10,
+  enableAiSearch: Boolean(process.env.OLLAMA_BASE_URL),
+};
 ```
 
-## Scripts
+## 📄 License & Author
 
-### Backend
-
-| Command | Description |
-|---|---|
-| `npm run dev` | Start dev server with hot reload |
-| `npm run build` | Build TypeScript |
-| `npm test` | Run tests |
-| `npm run lint` | Lint with ESLint |
-| `npm run db:seed` | Seed database (6 users, 30 quotes, friendships, reactions) |
-| `npm run db:clear` | Clear all data |
-| `npm run db:vectorize` | Backfill AI embeddings for existing quotes |
-
-### Frontend
-
-| Command | Description |
-|---|---|
-| `npm start` | Start Expo dev server |
-| `npm run android` | Run on Android |
-| `npm run ios` | Run on iOS (macOS only) |
-| `npm run web` | Run in web browser |
-| `npm test` | Run tests |
-| `npm run lint` | Lint with ESLint |
-
-## API Documentation
-
-Once the backend is running, visit [http://localhost:3000/api-docs](http://localhost:3000/api-docs) for Swagger UI.
-
-## AI Features (Optional)
-
-1. Install [Ollama](https://ollama.ai/)
-2. Pull the models:
-   ```bash
-   ollama pull nomic-embed-text
-   ollama pull llama3
-   ```
-3. Uncomment `OLLAMA_BASE_URL` in `.env`
-
-## Tech Stack
-
-**Backend:** Node.js, Express, TypeScript, PostgreSQL + pgvector, Socket.io, JWT, Zod, node-cron, Swagger
-
-**Frontend:** React Native, Expo, React Navigation, Axios, i18next, expo-notifications, expo-av
-
-**DevOps:** Docker, Docker Compose, GitHub Actions (CI/CD), EAS Build
+- **Author:** [Costin Ghiujan](https://github.com/coxteen)
+- **License:** Released under the [MIT License](LICENSE).
